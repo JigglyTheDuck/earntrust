@@ -189,6 +189,7 @@ function renderWrapForm() {
       if (isApproved) {
         await watchTx(await wrap(parseUnits(input.value, "ether")));
         renderStatus("transaction completed", "success");
+        input.value = '0'
       } else {
         await watchTx(await approve(parseUnits(input.value, "ether")));
 
@@ -240,10 +241,10 @@ function renderUnwrapForm() {
     try {
       await watchTx(await unwrap(parseUnits(input.value, "ether")));
       renderStatus("approval completed", "success");
-      input.value = "";
+      input.value = ''
     } catch (e) {
     } finally {
-      initialize().then(() => render(input.value));
+      initialize().then(() => render('0'));
     }
   };
 

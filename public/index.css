@@ -1,0 +1,175 @@
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/kong.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --border-width: 4px;
+  --size-xs: 0.25rem;
+  --size-sm: 0.5rem;
+  --size-md: 1rem;
+  --size-lg: 2rem;
+  --size-xl: 4rem;
+
+  --size-width-xs: 8rem;
+  --size-width-sm: 16rem;
+  --size-width-md: 32rem;
+  --size-width-lg: 48rem;
+  --size-width-xl: 64rem;
+
+  --color-text-primary: #242424;
+  --color-text-secondary: #6a6a6a;
+  --color-primary: #108de0;
+  --color-primary-variant: #3990f0;
+  --color-secondary: rgba(255, 255, 255, 0.75);
+
+  --color-background: #eee;
+  --color-background-primary: var(--color-background);
+  --color-background-shadow: #161616;
+  --color-background-secondary: #ffffff;
+  --color-background-disabled: #626262;
+
+  --color-overlay: rgba(0, 0, 0, 0.66);
+
+  font-weight: 400;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /*color-scheme: light dark;*/
+  color: #213547;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media screen and (max-width: 48rem) {
+  :root {
+    --size-md: 0.5rem;
+    --size-lg: 1.25rem;
+    --size-xl: 0.25rem;
+  }
+  body > main.nes-container {
+    padding: 1.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  .nes-radio {
+    margin-right: 0;
+  }
+}
+
+.nes-container.with-title > .title {
+  background: var(--color-background-primary)!important;
+}
+
+.nes-input,
+textarea {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+
+.nes-balloon {
+  margin-bottom: 0;
+}
+a {
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--color-primary-variant);
+}
+
+html,
+body {
+  max-width: 1024px;
+  margin: 0 auto;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+}
+
+body > header {
+  margin-top: 10vh;
+}
+
+html.injected,
+html.injected body {
+  background: none;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  margin: 0;
+}
+
+h1.secondary,
+h2.secondary,
+h3.secondary,
+h4.secondary,
+h5.secondary,
+p.secondary,
+span.secondary {
+  color: var(--color-text-secondary);
+}
+
+.text.sm,
+nav.sm,
+span.sm,
+p.sm {
+  font-size: 0.875rem;
+}
+
+span.lg,
+p.lg {
+  font-size: 1.25rem;
+}
+
+.nes-progress,
+.nes-textarea,
+.nes-balloon {
+  border-color: var(--color-text-primary);
+  border-image: none !important;
+  clip-path: polygon(
+    0% var(--border-width),
+    var(--border-width) var(--border-width),
+    var(--border-width) 0%,
+    calc(100% - var(--border-width)) 0%,
+    calc(100% - var(--border-width)) var(--border-width),
+    100% var(--border-width),
+    100% calc(100% - var(--border-width)),
+    calc(100% - var(--border-width)) calc(100% - var(--border-width)),
+    calc(100% - var(--border-width)) 100%,
+    var(--border-width) 100%,
+    var(--border-width) calc(100% - var(--border-width)),
+    0% calc(100% - var(--border-width))
+  );
+}
+
+footer {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+}
+
+.hidden {
+  display: none;
+}

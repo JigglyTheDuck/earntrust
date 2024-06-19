@@ -5,7 +5,7 @@ import "./app.css";
 import { BrowserProvider, Contract, formatUnits, parseUnits } from "ethers";
 
 const tokenAddress = "0x0356Ee6D5c0a53f43D1AC2022B3d5bA7acf7e697";
-const wrappedTokenAddress = "0xe5856D12020cF9a8CFD3c43E62e4EA1b57fB8954";
+const wrappedTokenAddress = "0x8aca2445f2af7ae603651883c4fe89322bfc95bb";
 
 // 1. Get projectId from https://cloud.walletconnect.com
 const projectId = "8f5f355009100190a740191196c25d18";
@@ -68,6 +68,10 @@ async function approve(amount) {
   const ercContract = new Contract(tokenAddress, abi, await getSigner());
 
   return ercContract.approve(wrappedTokenAddress, amount);
+}
+
+async function timeout(t) {
+  return new Promise((r) => setTimeout(r, t));
 }
 
 async function watchTx(txReceipt) {
@@ -189,11 +193,14 @@ function renderWrapForm() {
       if (isApproved) {
         await watchTx(await wrap(parseUnits(input.value, "ether")));
         renderStatus("transaction completed", "success");
-        input.value = '0'
+        input.value = "0";
+        await timeout(1000);
       } else {
         await watchTx(await approve(parseUnits(input.value, "ether")));
 
         renderStatus("approval completed", "success");
+
+        await timeout(1000);
       }
     } catch (e) {
     } finally {
@@ -240,11 +247,12 @@ function renderUnwrapForm() {
     renderBtn("LOADING", "disabled");
     try {
       await watchTx(await unwrap(parseUnits(input.value, "ether")));
-      renderStatus("approval completed", "success");
-      input.value = ''
+      renderStatus("tokens unwrapped", "success");
+      input.value = "";
+      await timeout(1000);
     } catch (e) {
     } finally {
-      initialize().then(() => render('0'));
+      initialize().then(() => render("0"));
     }
   };
 

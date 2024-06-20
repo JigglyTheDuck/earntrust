@@ -3,3 +3,8 @@
   margin: auto;
   margin-top: 10vh;
 }
+@media screen and (max-width: 48rem) {
+  .app-container {
+    margin-top: 1rem;
+  }
+}

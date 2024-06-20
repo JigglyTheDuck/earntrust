@@ -4,8 +4,8 @@ import wrappedABI from "./contract.json";
 import "./app.css";
 import { BrowserProvider, Contract, formatUnits, parseUnits } from "ethers";
 
-const tokenAddress = import.meta.env.VITE_TOKEN
-const wrappedTokenAddress = import.meta.env.VITE_WRAPPED_TOKEN
+const tokenAddress = import.meta.env.VITE_TOKEN;
+const wrappedTokenAddress = import.meta.env.VITE_WRAPPED_TOKEN;
 
 // 1. Get projectId from https://cloud.walletconnect.com
 const projectId = "8f5f355009100190a740191196c25d18";
@@ -176,14 +176,16 @@ function renderBtn(text, variant = "warning") {
 function renderWrapForm() {
   let allowance = 0;
   let balance = 0;
-  const initialize = () =>
-    Promise.all([getAllowance(), getBalance()]).then(
+  const initialize = () => {
+    renderStatus("loading...", "error");
+    return Promise.all([getAllowance(), getBalance(), timeout(250)]).then(
       ([_allowance, _balance]) => {
         balance = _balance;
         allowance = _allowance;
         renderStatus(`balance: ${renderFloat(formatUnits(balance, 18))}`);
       }
     );
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -236,11 +238,13 @@ function renderWrapForm() {
 
 function renderUnwrapForm() {
   let balance;
-  const initialize = () =>
-    getBalance(true).then((result) => {
+  const initialize = () => {
+    renderStatus("loading...", "error");
+    return Promise.all([getBalance(true), timeout(250)]).then(([result]) => {
       balance = result;
       renderStatus(`balance: ${renderFloat(formatUnits(balance, 18))}`);
     });
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();

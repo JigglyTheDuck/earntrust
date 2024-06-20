@@ -57,8 +57,7 @@
     --size-lg: 1.25rem;
     --size-xl: 0.25rem;
   }
-  body > main.nes-container {
-    padding: 1.5rem 1rem;
+  body {
     font-size: 0.875rem;
   }
   .nes-radio {
@@ -94,10 +93,6 @@ body {
   margin: 0 auto;
   color: var(--color-text-primary);
   background: var(--color-background-primary);
-}
-
-body > header {
-  margin-top: 10vh;
 }
 
 html.injected,

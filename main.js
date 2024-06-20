@@ -4,8 +4,8 @@ import wrappedABI from "./contract.json";
 import "./app.css";
 import { BrowserProvider, Contract, formatUnits, parseUnits } from "ethers";
 
-const tokenAddress = "0x0356Ee6D5c0a53f43D1AC2022B3d5bA7acf7e697";
-const wrappedTokenAddress = "0x8aca2445f2af7ae603651883c4fe89322bfc95bb";
+const tokenAddress = import.meta.env.VITE_TOKEN
+const wrappedTokenAddress = import.meta.env.VITE_WRAPPED_TOKEN
 
 // 1. Get projectId from https://cloud.walletconnect.com
 const projectId = "8f5f355009100190a740191196c25d18";

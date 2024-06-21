@@ -309,9 +309,9 @@ function handler({ name, icon }) {
   actionBtn.disabled = false;
   input.disabled = false;
   if (destroyForm) destroyForm();
+  radioInputs[0].checked = true;
+  radioInputs[1].checked = false;
   destroyForm = renderWrapForm();
 }
 
-radioInputs[0].checked = true;
-radioInputs[1].checked = false;
 modal.subscribeWalletInfo(handler);

@@ -130,6 +130,13 @@ async function getBalance(isWrapped = false) {
   return ercContract.balanceOf(signer.address);
 }
 
+async function getLockedTokens() {
+  const signer = await getSigner();
+  const ercContract = new Contract(wrappedTokenAddress, wrappedABI, signer);
+
+  return ercContract.lockedTokens(signer.address);
+}
+
 document.querySelector("#app").innerHTML = `
   <w3m-button></w3m-button>
 `;
@@ -238,11 +245,23 @@ function renderWrapForm() {
 
 function renderUnwrapForm() {
   let balance;
+  let lockedTokens;
   const initialize = () => {
     renderStatus("loading...", "error");
-    return Promise.all([getBalance(true), timeout(250)]).then(([result]) => {
+    return Promise.all([
+      getBalance(true),
+      getLockedTokens(),
+      timeout(250),
+    ]).then(([result, result1]) => {
       balance = result;
-      renderStatus(`balance: ${renderFloat(formatUnits(balance, 18))}`);
+      lockedTokens = Date.now() / 1000 > result1.unlocksAt ? 0 : result1.value;
+      renderStatus(
+        `balance: ${renderFloat(formatUnits(balance, 18))}${
+          lockedTokens > 0
+            ? ` (${renderFloat(formatUnits(lockedTokens, 18))} locked)`
+            : ""
+        }`
+      );
     });
   };
 

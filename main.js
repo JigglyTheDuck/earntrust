@@ -289,6 +289,7 @@ function handler({ name, icon }) {
   actionBtn.classList.add("is-warning");
   actionBtn.disabled = false;
   input.disabled = false;
+  if (destroyForm) destroyForm();
   destroyForm = renderWrapForm();
 }
 

@@ -183,6 +183,7 @@ function renderBtn(text, variant = "warning") {
 function renderWrapForm() {
   let allowance = 0;
   let balance = 0;
+  renderBtn("WRAP");
   const initialize = () => {
     renderStatus("loading...", "error");
     return Promise.all([getAllowance(), getBalance(), timeout(250)]).then(
@@ -222,7 +223,7 @@ function renderWrapForm() {
     if (wei > balance) {
       renderBtn("INSUFFICIENT BALANCE", "disabled");
     } else if (wei <= allowance) {
-      renderBtn("SEND TRANSACTION");
+      renderBtn("WRAP");
     } else {
       renderBtn("APPROVE");
     }
@@ -246,6 +247,7 @@ function renderWrapForm() {
 function renderUnwrapForm() {
   let balance;
   let lockedTokens;
+  renderBtn("UNWRAP");
   const initialize = () => {
     renderStatus("loading...", "error");
     return Promise.all([
@@ -284,7 +286,7 @@ function renderUnwrapForm() {
     if (wei > balance) {
       renderBtn("INSUFFICIENT BALANCE", "disabled");
     } else {
-      renderBtn("SEND TRANSACTION", "warning");
+      renderBtn("UNWRAP", "warning");
     }
   };
 

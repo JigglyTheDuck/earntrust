@@ -150,10 +150,10 @@ const handleRadioChange = (event) => {
 
   if (destroyForm) destroyForm();
 
-  if (selectedOption === "unwrap") {
-    destroyForm = renderUnwrapForm();
-  } else {
+  if (selectedOption === "wrap") {
     destroyForm = renderWrapForm();
+  } else {
+    destroyForm = renderUnwrapForm();
   }
 };
 
@@ -313,7 +313,7 @@ function handler({ name, icon }) {
   if (destroyForm) destroyForm();
   radioInputs[0].checked = true;
   radioInputs[1].checked = false;
-  destroyForm = renderWrapForm();
+  destroyForm = renderUnwrapForm();
 }
 
 modal.subscribeWalletInfo(handler);

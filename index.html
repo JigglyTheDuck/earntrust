@@ -18,13 +18,18 @@
       <form id="main-form" class="stack padding-md stack gap-md">
         <div class="inline gap-lg">
           <label>
-            <input type="radio" class="nes-radio" value="wrap" name="wrap" checked />
-            <span>Wrap</span>
-          </label>
-
-          <label>
-            <input type="radio" class="nes-radio" value="unwrap" name="wrap" />
+            <input
+              type="radio"
+              class="nes-radio"
+              value="unwrap"
+              name="wrap"
+              checked
+            />
             <span>Unwrap</span>
+          </label>
+          <label>
+            <input type="radio" class="nes-radio" value="wrap" name="wrap" />
+            <span>Wrap</span>
           </label>
         </div>
         <div class="stack gap-md">
@@ -32,15 +37,26 @@
         </div>
         <div class="nes-field">
           <label for="name_field">Amount</label>
-          <input placeholder="1000" disabled type="text" inputmode="numeric" id="amount" class="nes-input" autocomplete="off" />
+          <input
+            placeholder="1000"
+            disabled
+            type="text"
+            inputmode="numeric"
+            id="amount"
+            class="nes-input"
+            autocomplete="off"
+          />
           <span id="status" class="nes-text is-error"></span>
         </div>
         <div class="inline sm justify-center gap-md">
           <!--<button id="action-max" class="nes-btn is-disabled" disabled>MAX</button>-->
-          <button id="action" class="nes-btn is-disabled" disabled>WRAP</button>
+          <button id="action" class="nes-btn is-disabled" disabled>UNWRAP</button>
         </div>
       </form>
-      <footer>make sure you're on <br/> https://wrap.jiggly.app</footer>
+      <footer>
+        make sure you're on <br />
+        https://wrap.jiggly.app
+      </footer>
     </div>
     <script type="module" src="/main.js"></script>
   </body>

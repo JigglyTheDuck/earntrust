@@ -4,7 +4,6 @@ import wrappedABI from "./contract.json";
 import "./app.css";
 import { BrowserProvider, Contract, formatUnits, parseUnits } from "ethers";
 
-const tokenAddress = import.meta.env.VITE_TOKEN;
 const wrappedTokenAddress = import.meta.env.VITE_WRAPPED_TOKEN;
 
 // 1. Get projectId from https://cloud.walletconnect.com
@@ -64,12 +63,6 @@ async function getSigner() {
   return signer;
 }
 
-async function approve(amount) {
-  const ercContract = new Contract(tokenAddress, abi, await getSigner());
-
-  return ercContract.approve(wrappedTokenAddress, amount);
-}
-
 async function timeout(t) {
   return new Promise((r) => setTimeout(r, t));
 }
@@ -84,19 +77,6 @@ async function watchTx(txReceipt) {
     if (receipt?.blockNumber) r(receipt);
     else setTimeout(() => watchTx(txReceipt).then(r), 1000);
   });
-}
-
-async function getAllowance() {
-  const signer = await getSigner();
-  const ercContract = new Contract(tokenAddress, abi, signer);
-
-  return ercContract.allowance(signer.address, wrappedTokenAddress);
-}
-
-async function canWrap(amount) {
-  const allowance = await getAllowance();
-
-  return amount <= allowance;
 }
 
 async function wrap(amount) {
@@ -119,10 +99,15 @@ async function unwrap(amount) {
   return contract.unwrap(amount);
 }
 
-async function getBalance(isWrapped = false) {
+async function getETHBalance() {
+  const signer = await getSigner();
+  return await signer.provider.getBalance(signer.address)
+}
+
+async function getBalance() {
   const signer = await getSigner();
   const ercContract = new Contract(
-    isWrapped ? wrappedTokenAddress : tokenAddress,
+    wrappedTokenAddress,
     abi,
     signer
   );
@@ -181,15 +166,13 @@ function renderBtn(text, variant = "warning") {
 }
 
 function renderWrapForm() {
-  let allowance = 0;
   let balance = 0;
   renderBtn("WRAP");
   const initialize = () => {
     renderStatus("loading...", "error");
-    return Promise.all([getAllowance(), getBalance(), timeout(250)]).then(
-      ([_allowance, _balance]) => {
+    return Promise.all([getETHBalance(), timeout(250)]).then(
+      ([_balance]) => {
         balance = _balance;
-        allowance = _allowance;
         renderStatus(`balance: ${renderFloat(formatUnits(balance, 18))}`);
       }
     );
@@ -197,21 +180,12 @@ function renderWrapForm() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const isApproved = actionBtn.innerText !== "APPROVE";
     renderBtn("LOADING", "disabled");
     try {
-      if (isApproved) {
-        await watchTx(await wrap(parseUnits(input.value, "ether")));
-        renderStatus("transaction completed", "success");
-        input.value = "0";
-        await timeout(1000);
-      } else {
-        await watchTx(await approve(parseUnits(input.value, "ether")));
-
-        renderStatus("approval completed", "success");
-
-        await timeout(1000);
-      }
+      await watchTx(await wrap(parseUnits(input.value, "ether")));
+      renderStatus("transaction completed", "success");
+      input.value = "0";
+      await timeout(1000);
     } catch (e) {
     } finally {
       initialize().then(() => render(input.value));
@@ -222,10 +196,8 @@ function renderWrapForm() {
     const wei = parseUnits(inputValue, "ether");
     if (wei > balance) {
       renderBtn("INSUFFICIENT BALANCE", "disabled");
-    } else if (wei <= allowance) {
-      renderBtn("WRAP");
     } else {
-      renderBtn("APPROVE");
+      renderBtn("WRAP");
     }
   };
 
@@ -247,7 +219,7 @@ function renderWrapForm() {
 function renderUnwrapForm() {
   let balance;
   let lockedTokens;
-  renderBtn("UNWRAP");
+  renderBtn("UNWRAP", "disabled");
   const initialize = () => {
     renderStatus("loading...", "error");
     return Promise.all([
@@ -311,8 +283,8 @@ function handler({ name, icon }) {
   actionBtn.disabled = false;
   input.disabled = false;
   if (destroyForm) destroyForm();
-  radioInputs[0].checked = true;
-  radioInputs[1].checked = false;
+  //radioInputs[0].checked = true;
+  //radioInputs[1].checked = false;
   destroyForm = renderUnwrapForm();
 }
 

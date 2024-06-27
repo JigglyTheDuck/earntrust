@@ -27,6 +27,10 @@
   --color-text-secondary: #6a6a6a;
   --color-primary: #108de0;
   --color-primary-variant: #3990f0;
+
+  --color-success: #76c442;
+  --color-error: #ce372b;
+  --color-warning: #f7d51d;
   --color-secondary: rgba(255, 255, 255, 0.75);
 
   --color-background: #eee;
@@ -67,6 +71,9 @@
 
 .nes-container.with-title > .title {
   background: var(--color-background-primary)!important;
+  margin-bottom: 0;
+  position: relative;
+  bottom: -0.375rem;
 }
 
 .nes-input,
@@ -160,11 +167,34 @@ p.lg {
   );
 }
 
-footer {
-  margin-top: 1rem;
-  font-size: 0.75rem;
-}
-
 .hidden {
   display: none;
+}
+
+canvas  {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.app-container {
+  width: 100%;
+  margin: auto;
+  margin-top: 10vh;
+  height: 90svh;
+  max-height: 40rem;
+}
+
+.app-container > .stack {
+  height: 100%;
+}
+
+@media screen and (max-width: 48rem) {
+  .app-container {
+    margin-top: 0.5rem;
+  }
+}
+
+.separator {
+  border-top: 4px solid var(--color-text-primary);
+  padding-top: var(--size-md);
 }

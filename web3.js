@@ -1,19 +1,24 @@
 import CandleRenderer from "./candle";
 import {
+  Contract,
   formatUnits,
   parseUnits,
   id,
   JsonRpcProvider,
   WebSocketProvider,
   dataSlice,
+  dataLength,
 } from "ethers";
 import "./app.css";
+import contractABI from "./contract.json";
 
-const COMPOSER_ADDRESS = "0x4528dE27303cE875233AC17F85eecc47A0983685";
+const COMPOSER_ADDRESS = "0x0A87ef7C991857E2E4d3C447621B18a1f44caf23";
 
-const renderer = new CandleRenderer(
-  document.getElementById("candlestickCanvas")
-);
+const canvas = document.getElementById("candlestickCanvas");
+const rewardsView = document.getElementById("rewardsView");
+const form = document.getElementById("main-form");
+
+const renderer = new CandleRenderer(canvas);
 
 function renderProgress(value, max) {
   const progressBar = document.getElementById("progress_bar");
@@ -112,8 +117,8 @@ async function update(provider) {
   }
 
   if (openPrice === 0) {
-    openPrice = targetPrice
-    lowPrice = openPrice
+    openPrice = targetPrice;
+    lowPrice = openPrice;
   }
 
   renderer.render({
@@ -136,10 +141,11 @@ let provider;
 async function main() {
   try {
     if (!provider || provider.websocket.readyState !== 1) {
-      //provider = new WebSocketProvider("wss://base-rpc.publicnode.com");
+      provider = new WebSocketProvider("wss://base-rpc.publicnode.com");
+      /*
       provider = new WebSocketProvider(
         "wss://polygon-mainnet.infura.io/ws/v3/ba79be269a9a4f809c69e4f252b7ec0b"
-      );
+      );*/
     }
     if (cleanup) cleanup();
     cleanup = await update(provider);
@@ -151,3 +157,68 @@ async function main() {
 }
 
 main();
+
+let currentView = "CHART";
+const viewToggle = document.getElementById("action__view");
+const status = document.querySelector("#status");
+function renderStatus(text, variant = "primary") {
+  status.classList.remove(...status.classList);
+  status.classList.add(`is-${variant}`, "nes-text");
+  status.innerHTML = text;
+}
+
+function renderView() {
+  if (currentView === "CHART") {
+    canvas.classList.remove("hidden");
+    rewardsView.classList.add("hidden");
+  } else {
+    canvas.classList.add("hidden");
+    rewardsView.classList.remove("hidden");
+  }
+}
+
+viewToggle.addEventListener("click", () => {
+  currentView = currentView === "CHART" ? "REWARDS" : "CHART";
+
+  renderView();
+});
+function getContract() {
+  return new Contract(COMPOSER_ADDRESS, contractABI, provider);
+}
+function loadLockedFunds(address) {
+  return getContract().lockedFunds(address);
+}
+function loadContributions(address) {
+  return getContract().contributions(address);
+}
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = new FormData(e.target);
+
+  const address = data.get("address");
+
+  try {
+    if (dataLength(address) !== 20) throw new Error();
+  } catch (e) {
+    renderStatus("invalid address", "error");
+    return;
+  }
+
+  renderStatus("loading...");
+
+  try {
+    const [{ value: lockedAmount }, { value: contributions }] =
+      await Promise.all([loadLockedFunds(address), loadContributions(address)]);
+
+    renderStatus(
+      `locked tokens: ${formatUnits(
+        lockedAmount,
+        "gwei"
+      )}, contributions: ${formatUnits(contributions, "gwei")}`
+    );
+  } catch (e) {
+    renderStatus("network error, please try again later..", "error");
+    return;
+  }
+});

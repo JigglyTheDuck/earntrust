@@ -16,11 +16,11 @@ export default class CandleRenderer {
   canvas;
   candleWidth = 32;
   priceData;
-  DIGITS = 4;
+  DIGITS = 3;
 
   withLabel(label, value) {
-    if (window.innerWidth < 640) return value.toFixed(this.DIGITS);
-    return `${label}: ${value.toFixed(this.DIGITS)}`;
+    if (window.innerWidth < 640) return `$${value.toFixed(this.DIGITS)}`;
+    return `${label}: $${value.toFixed(this.DIGITS)}`;
   }
 
   constructor(element) {
@@ -134,25 +134,26 @@ export default class CandleRenderer {
     );
     ctx.textAlign = "center";
     ctx.font = `${window.innerWidth > 800 ? 16 : 14}px 'Press Start 2P'`;
-    if (high != low && high != close) {
-      ctx.fillText(
-        this.withLabel("High", high),
-        candleX + this.candleWidth / 2,
-        this.canvas.height - scaledHigh - 5
-      );
-
-      // Draw low price label below the candle
-      ctx.fillText(
-        this.withLabel("Low", low),
-        candleX + this.candleWidth / 2,
-        this.canvas.height - scaledLow + 22
-      );
+    // we just need to make sure we're not rendering overlaying text
+    if (high !== low) {
+      if (high !== close)
+        ctx.fillText(
+          this.withLabel("High", high),
+          candleX + this.candleWidth / 2,
+          this.canvas.height - scaledHigh - 5
+        );
+      if (low !== close)
+        ctx.fillText(
+          this.withLabel("Low", low),
+          candleX + this.candleWidth / 2,
+          this.canvas.height - scaledLow + 22
+        );
     }
 
     // Draw current price on the right side of the candle
     ctx.textAlign = "right";
     ctx.fillText(
-      close.toFixed(this.DIGITS),
+      `$${close.toFixed(this.DIGITS)}`,
       this.canvas.width - 8,
       this.canvas.height - scaledClose - 5
     );

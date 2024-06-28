@@ -15,7 +15,10 @@
       class="app-container nes-container with-title padding-sm width-md gap-lg"
     >
       <p class="title">EarnTrust</p>
-      <form id="main-form" class="stack padding-md stack gap-md grow-1">
+      <form
+        id="main-form"
+        class="stack justify-space-between padding-md stack gap-md grow-1"
+      >
         <div class="progress-container">
           <progress
             id="progress_bar"
@@ -26,6 +29,27 @@
           <span id="progress_value" class="nes-progress-value nes-text"
             >Loading...</span
           >
+        </div>
+        <div id="rewardsView" class="stack hidden grow-1 gap-md align-start">
+          Enter your address below
+          <div class="nes-field">
+            <div class="inline justify-center gap-sm">
+              <div>
+                <input
+                  placeholder="0x..."
+                  name="address"
+                  type="text"
+                  id="rewards"
+                  class="nes-input"
+                  autocomplete="off"
+                />
+              </div>
+              <button id="action" class="nes-btn is-success">
+                LOAD
+              </button>
+            </div>
+            <span id="status" class="nes-text is-error"></span>
+          </div>
         </div>
         <canvas id="candlestickCanvas" class="grow-1"></canvas>
         <!--
@@ -50,10 +74,12 @@
             -->
 
         <div class="inline xs reverse justify-center gap-sm separator">
-          <button id="action" class="nes-btn is-primary" disabled>HELP</button>
-          <button id="action" class="nes-btn" disabled>REWARDS</button>
+          <a href="#" class="nes-btn is-primary">HELP</a>
+          <button type="button" id="action__view" class="nes-btn">
+            REWARDS
+          </button>
           <a
-            href="#"
+            href="https://app.uniswap.org/swap?chain=base&inputCurrency=0x0356Ee6D5c0a53f43D1AC2022B3d5bA7acf7e697&outputCurrency=0xc1031BDaE25c992d8c1E8Df6e286506F3301b8c9"
             target="_blank"
             id="action"
             class="nes-btn is-warning"

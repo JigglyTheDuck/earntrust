@@ -168,7 +168,7 @@ p.lg {
 }
 
 .hidden {
-  display: none;
+  display: none!important;
 }
 
 canvas  {

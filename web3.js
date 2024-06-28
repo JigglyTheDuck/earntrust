@@ -9,7 +9,7 @@ import {
 } from "ethers";
 import "./app.css";
 
-const COMPOSER_ADDRESS = "0x2FcCB85fE41cB50900B07e983157AA65a09F23Ee";
+const COMPOSER_ADDRESS = "0x4528dE27303cE875233AC17F85eecc47A0983685";
 
 const renderer = new CandleRenderer(
   document.getElementById("candlestickCanvas")
@@ -88,7 +88,7 @@ async function update(provider) {
   }
 
   const blockNumber = await provider.getBlockNumber();
-  const {
+  let {
     fromBlock,
     targetPrice,
     closePrice: openPrice,
@@ -109,6 +109,11 @@ async function update(provider) {
 
   for (const p of prices) {
     updatePrice(p);
+  }
+
+  if (openPrice === 0) {
+    openPrice = targetPrice
+    lowPrice = openPrice
   }
 
   renderer.render({

@@ -1,3 +1,17 @@
+function hexToRgba(hex, alpha = 0.2) {
+  // Remove the hash at the start if it's there
+  hex = hex.replace(/^#/, "");
+
+  // Parse the r, g, b values
+  let bigint = parseInt(hex, 16);
+  let r = (bigint >> 16) & 255;
+  let g = (bigint >> 8) & 255;
+  let b = bigint & 255;
+
+  // Return the RGBA string
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export default class CandleRenderer {
   canvas;
   candleWidth = 32;
@@ -44,8 +58,8 @@ export default class CandleRenderer {
       open > close ? "--color-error" : "--color-success"
     );
 
-    const lowPrice = Math.min(target, low);
-    const highPrice = Math.max(target, high);
+    const lowPrice = Math.min(target - target * 0.02, low);
+    const highPrice = Math.max(target + target * 0.02, high);
 
     const scalePrice = (price) => {
       const diff = (highPrice - lowPrice) / (window.innerHeight > 600 ? 16 : 8);
@@ -62,24 +76,38 @@ export default class CandleRenderer {
       ctx.stroke();
     };
 
-    const drawScale = (distance, color) => {
-      ctx.strokeStyle = getComputedStyle(
-        document.documentElement
-      ).getPropertyValue(`--color-${color}`);
+    const drawRect = (y0, y1) => {
+      const height = y1 - y0;
+      ctx.beginPath();
+      const startY = this.canvas.height - scalePrice(target);
+      ctx.moveTo(0, startY);
+      ctx.lineTo(this.canvas.width / 2, y1);
+      ctx.lineTo(this.canvas.width / 2, y0);
 
-      drawHorizontalLine(
-        this.canvas.width - 12,
-        this.canvas.width,
-        this.canvas.height - scalePrice(target + target * distance)
+      ctx.rect(this.canvas.width / 2, y0, this.canvas.width / 2, height); // Add a rectangle to the current path
+      ctx.fill(); // Render the path
+    };
+
+    const drawScale = (distance, color, limit) => {
+      ctx.fillStyle = hexToRgba(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          `--color-${color}`
+        )
       );
+      let y = this.canvas.height - scalePrice(target + target * distance);
+      if (!limit) {
+        const y1 = this.canvas.height - scalePrice(target - target * distance);
+        drawRect(y, y1);
+      } else {
+        const y1 = this.canvas.height - scalePrice(target + target * limit);
+        drawRect(y, y1);
 
-      drawHorizontalLine(
-        this.canvas.width - 12,
-        this.canvas.width,
-        this.canvas.height - scalePrice(target - target * distance)
-      );
+        y = this.canvas.height - scalePrice(target - target * distance);
+        const y2 = this.canvas.height - scalePrice(target - target * limit);
+        drawRect(y, y2);
+      }
 
-      ctx.strokeStyle = getComputedStyle(
+      ctx.fillStyle = getComputedStyle(
         document.documentElement
       ).getPropertyValue("--color-text-primary");
     };
@@ -93,6 +121,10 @@ export default class CandleRenderer {
     const scaledClose = scalePrice(close);
     const scaledTarget = scalePrice(target);
 
+    drawScale(0.02, "warning", 0.01);
+    drawScale(0.01, "primary", 0.005);
+    drawScale(0.005, "success");
+
     // Draw high price label above the candle
     ctx.strokeStyle = getComputedStyle(
       document.documentElement
@@ -102,31 +134,32 @@ export default class CandleRenderer {
     );
     ctx.textAlign = "center";
     ctx.font = `${window.innerWidth > 800 ? 16 : 14}px 'Press Start 2P'`;
-    ctx.fillText(
-      this.withLabel("High", high),
-      candleX + this.candleWidth / 2,
-      this.canvas.height - scaledHigh - 5
-    );
+    if (high != low && high != close) {
+      ctx.fillText(
+        this.withLabel("High", high),
+        candleX + this.candleWidth / 2,
+        this.canvas.height - scaledHigh - 5
+      );
 
-    // Draw low price label below the candle
-    ctx.fillText(
-      this.withLabel("Low", low),
-      candleX + this.candleWidth / 2,
-      this.canvas.height - scaledLow + 22
-    );
+      // Draw low price label below the candle
+      ctx.fillText(
+        this.withLabel("Low", low),
+        candleX + this.candleWidth / 2,
+        this.canvas.height - scaledLow + 22
+      );
+    }
 
     // Draw current price on the right side of the candle
     ctx.textAlign = "right";
-    if (close !== high && close !== low)
-      ctx.fillText(
-        close.toFixed(this.DIGITS),
-        this.canvas.width - 16,
-        this.canvas.height - scaledClose - 5
-      );
+    ctx.fillText(
+      close.toFixed(this.DIGITS),
+      this.canvas.width - 8,
+      this.canvas.height - scaledClose - 5
+    );
 
     drawHorizontalLine(
       this.canvas.width / 2 - 2,
-      this.canvas.width,
+      this.canvas.width - 8,
       this.canvas.height - scaledClose + (close < open ? 2 : -2)
     );
 
@@ -141,18 +174,14 @@ export default class CandleRenderer {
     ctx.textAlign = "left";
     ctx.fillText(
       this.withLabel("T", target),
-      0,
+      4,
       this.canvas.height - scaledTarget - 5
     );
     drawHorizontalLine(
-      0,
+      8,
       this.canvas.width / 2 + 2,
       this.canvas.height - scaledTarget
     );
-
-    drawScale(0.005, "success");
-    drawScale(0.02, "primary");
-    drawScale(0.05, "error");
 
     ctx.beginPath();
     ctx.moveTo(candleX + this.candleWidth / 2, this.canvas.height - scaledHigh);

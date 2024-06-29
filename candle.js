@@ -88,13 +88,16 @@ export default class CandleRenderer {
       ctx.fill(); // Render the path
     };
 
-    const drawScale = (distance, color, limit) => {
+    const drawScale = (distance, color, limit, isActive = false) => {
+
       ctx.fillStyle = hexToRgba(
         getComputedStyle(document.documentElement).getPropertyValue(
           `--color-${color}`
-        )
+        ),
+        isActive ? 0.66 : 0.2
       );
       let y = this.canvas.height - scalePrice(target + target * distance);
+      // TODO: highlight the section if within
       if (!limit) {
         const y1 = this.canvas.height - scalePrice(target - target * distance);
         drawRect(y, y1);
@@ -121,9 +124,52 @@ export default class CandleRenderer {
     const scaledClose = scalePrice(close);
     const scaledTarget = scalePrice(target);
 
-    drawScale(0.03, "warning", 0.015);
-    drawScale(0.015, "primary", 0.005);
-    drawScale(0.005, "success");
+    const getActiveScale = (scales) => {
+      let i = 0;
+      for (const scale of scales) {
+        if (
+          close <= target + target * scale &&
+          close >= target - target * scale
+        )
+          return i;
+
+        i += 1;
+      }
+
+      return -1;
+    };
+
+    const drawScales = () => {
+      const scales = [
+        {
+          color: "success",
+          bound: 0.005,
+        },
+        {
+          color: "primary",
+          bound: 0.015,
+        },
+        {
+          color: "warning",
+          bound: 0.03,
+        },
+      ];
+
+      const activeScaleIndex = getActiveScale(scales.map((s) => s.bound));
+
+      let previousBound = 0;
+      for (const [i, scale] of scales.entries()) {
+        drawScale(
+          scale.bound,
+          scale.color,
+          previousBound,
+          activeScaleIndex === i
+        );
+        previousBound = scale.bound;
+      }
+    };
+
+    drawScales();
 
     // Draw high price label above the candle
     ctx.strokeStyle = getComputedStyle(

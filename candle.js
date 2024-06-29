@@ -121,8 +121,8 @@ export default class CandleRenderer {
     const scaledClose = scalePrice(close);
     const scaledTarget = scalePrice(target);
 
-    drawScale(0.02, "warning", 0.01);
-    drawScale(0.01, "primary", 0.005);
+    drawScale(0.03, "warning", 0.015);
+    drawScale(0.015, "primary", 0.005);
     drawScale(0.005, "success");
 
     // Draw high price label above the candle

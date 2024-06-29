@@ -2,17 +2,17 @@ import CandleRenderer from "./candle";
 import {
   Contract,
   formatUnits,
-  parseUnits,
   id,
   JsonRpcProvider,
   WebSocketProvider,
   dataSlice,
   dataLength,
 } from "ethers";
+import { formatGwei } from "./utils";
 import "./app.css";
 import contractABI from "./contract.json";
 
-const COMPOSER_ADDRESS = "0x0A87ef7C991857E2E4d3C447621B18a1f44caf23";
+const COMPOSER_ADDRESS = "0xEBb191727fa398fe28A166A5CefDF20a76c56459";
 
 const canvas = document.getElementById("candlestickCanvas");
 const rewardsView = document.getElementById("rewardsView");
@@ -138,6 +138,10 @@ async function update(provider) {
 
 let cleanup;
 let provider;
+async function run() {
+  if (cleanup) cleanup();
+  cleanup = await update(provider);
+}
 async function main() {
   try {
     if (!provider || provider.websocket.readyState !== 1) {
@@ -147,8 +151,7 @@ async function main() {
         "wss://polygon-mainnet.infura.io/ws/v3/ba79be269a9a4f809c69e4f252b7ec0b"
       );*/
     }
-    if (cleanup) cleanup();
-    cleanup = await update(provider);
+    run();
   } catch (e) {
     console.error(e);
   }
@@ -171,6 +174,7 @@ function renderView() {
   if (currentView === "CHART") {
     canvas.classList.remove("hidden");
     rewardsView.classList.add("hidden");
+    run();
   } else {
     canvas.classList.add("hidden");
     rewardsView.classList.remove("hidden");
@@ -178,6 +182,7 @@ function renderView() {
 }
 
 viewToggle.addEventListener("click", () => {
+  viewToggle.innerText = currentView;
   currentView = currentView === "CHART" ? "REWARDS" : "CHART";
 
   renderView();
@@ -212,10 +217,16 @@ form.addEventListener("submit", async (e) => {
       await Promise.all([loadLockedFunds(address), loadContributions(address)]);
 
     renderStatus(
-      `locked tokens: ${formatUnits(
-        lockedAmount,
-        "gwei"
-      )}, contributions: ${formatUnits(contributions, "gwei")}`
+      `<div class="stack">
+<div>
+<span>Locked tokens:</span>
+<span>${formatGwei(lockedAmount)}</span>
+</div>
+<div>
+<span>Contributions:</span>
+<span>${formatGwei(contributions)}</span>
+</div>
+</div>`
     );
   } catch (e) {
     renderStatus("network error, please try again later..", "error");

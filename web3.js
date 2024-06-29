@@ -12,7 +12,7 @@ import { formatGwei } from "./utils";
 import "./app.css";
 import contractABI from "./contract.json";
 
-const COMPOSER_ADDRESS = "0xEBb191727fa398fe28A166A5CefDF20a76c56459";
+const COMPOSER_ADDRESS = "0xDa915F510Daf9Bf404915E651EeDcE46Dcb8Fe7e";
 
 const canvas = document.getElementById("candlestickCanvas");
 const rewardsView = document.getElementById("rewardsView");
@@ -31,7 +31,9 @@ function renderProgress(value, max) {
     let minutes = Math.floor(t / 60);
     let seconds = t - minutes * 60;
     progressValue.innerText = `${minutes}m ${seconds}s`;
+    progressValue.classList.remove("blink");
   } else {
+    progressValue.classList.add("blink");
     progressValue.innerText = "pending TX";
   }
 
@@ -65,7 +67,7 @@ async function update(provider) {
 
     const parseEtherFloat = (n) =>
       parseFloat(
-        formatUnits(dataSlice(lastLog.data, n * 32, n * 32 + 32), "ether")
+        formatUnits(dataSlice(lastLog.data, n * 32, n * 32 + 32), 6)
       );
 
     const closePrice = parseEtherFloat(3); // it's the close of the
@@ -76,7 +78,7 @@ async function update(provider) {
 
   async function loadPrices(fromBlock, blockLimit, logs = []) {
     if (fromBlock > blockLimit)
-      return logs.map((log) => parseFloat(formatUnits(log.data, "ether")));
+      return logs.map((log) => parseFloat(formatUnits(log.data, 6)));
 
     const toBlock = fromBlock + 10000;
 

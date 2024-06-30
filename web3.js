@@ -130,11 +130,11 @@ async function update(provider) {
   } = await findSegmentBlock(blockNumber);
 
   const segmentStartedAt = (await provider.getBlock(fromBlock)).timestamp;
-  const prices = await loadPrices(fromBlock + 1, blockNumber);
+  const prices = await loadPrices(fromBlock, blockNumber);
 
   let highPrice = openPrice;
   let closePrice = openPrice;
-  let lowPrice = 1000000;
+  let lowPrice = openPrice;
   const updatePrice = (newPrice) => {
     closePrice = newPrice;
 
@@ -148,9 +148,6 @@ async function update(provider) {
 
   if (openPrice === 0) {
     openPrice = targetPrice;
-  }
-  if (lowPrice == 0) {
-    lowPrice = openPrice;
   }
 
   scales[0].isActive = false;

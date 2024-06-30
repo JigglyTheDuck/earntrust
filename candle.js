@@ -16,7 +16,7 @@ export default class CandleRenderer {
   canvas;
   candleWidth = 32;
   priceData;
-  DIGITS = 3;
+  DIGITS = 4;
 
   withLabel(label, value) {
     if (window.innerWidth < 640) return `$${value.toFixed(this.DIGITS)}`;
@@ -40,6 +40,7 @@ export default class CandleRenderer {
   }
 
   resize() {
+    if (this.canvas.classList.contains('hidden')) return
     this.canvas.width = 0;
     this.canvas.height = 0;
     const { width, height } = this.canvas.getBoundingClientRect();

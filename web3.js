@@ -2,6 +2,7 @@ import CandleRenderer from "./candle";
 import {
   Contract,
   formatUnits,
+  parseUnits,
   id,
   JsonRpcProvider,
   WebSocketProvider,
@@ -11,12 +12,41 @@ import {
 import { formatGwei } from "./utils";
 import "./app.css";
 import contractABI from "./contract.json";
+import ercABI from "./erc20.json";
 
-const COMPOSER_ADDRESS = "0xDa915F510Daf9Bf404915E651EeDcE46Dcb8Fe7e";
+const TOKEN_ADDRESS = "0xC66c6BeB1e503341b7cC95f0865062B514aDAC8A";
+const COMPOSER_ADDRESS = "0xeA33DbcB3C5E39507Aa0e5F85666DA1D354169Dc";
 
 const canvas = document.getElementById("candlestickCanvas");
 const rewardsView = document.getElementById("rewardsView");
 const form = document.getElementById("main-form");
+
+const scales = [
+  {
+    color: "success",
+    bound: 0.005,
+  },
+  {
+    color: "primary",
+    bound: 0.015,
+  },
+  {
+    color: "warning",
+    bound: 0.03,
+  },
+];
+
+const getActiveScaleIndex = (price, target) => {
+  for (const [i, scale] of scales.entries()) {
+    if (
+      price <= target + target * scale.bound &&
+      price >= target - target * scale.bound
+    )
+      return i;
+  }
+
+  return -1;
+};
 
 const renderer = new CandleRenderer(canvas);
 
@@ -66,9 +96,7 @@ async function update(provider) {
     const lastLog = logs.slice(-1)[0];
 
     const parseEtherFloat = (n) =>
-      parseFloat(
-        formatUnits(dataSlice(lastLog.data, n * 32, n * 32 + 32), 6)
-      );
+      parseFloat(formatUnits(dataSlice(lastLog.data, n * 32, n * 32 + 32), 6));
 
     const closePrice = parseEtherFloat(3); // it's the close of the
     const targetPrice = parseEtherFloat(6);
@@ -105,8 +133,8 @@ async function update(provider) {
   const prices = await loadPrices(fromBlock + 1, blockNumber);
 
   let highPrice = openPrice;
-  let lowPrice = openPrice;
   let closePrice = openPrice;
+  let lowPrice = 1000000;
   const updatePrice = (newPrice) => {
     closePrice = newPrice;
 
@@ -120,8 +148,16 @@ async function update(provider) {
 
   if (openPrice === 0) {
     openPrice = targetPrice;
+  }
+  if (lowPrice == 0) {
     lowPrice = openPrice;
   }
+
+  scales[0].isActive = false;
+  scales[1].isActive = false;
+  scales[2].isActive = false;
+  const activeScaleIndex = getActiveScaleIndex(closePrice, targetPrice);
+  if (activeScaleIndex >= 0) scales[activeScaleIndex].isActive = true;
 
   renderer.render({
     open: openPrice,
@@ -129,6 +165,7 @@ async function update(provider) {
     low: lowPrice,
     close: closePrice,
     target: targetPrice,
+    scales,
   });
 
   const interval = setInterval(() => watchProgress(segmentStartedAt), 500);
@@ -189,14 +226,20 @@ viewToggle.addEventListener("click", () => {
 
   renderView();
 });
-function getContract() {
-  return new Contract(COMPOSER_ADDRESS, contractABI, provider);
-}
-function loadLockedFunds(address) {
-  return getContract().lockedFunds(address);
+function getContract(address = COMPOSER_ADDRESS, abi = contractABI) {
+  return new Contract(address, abi, provider);
 }
 function loadContributions(address) {
   return getContract().contributions(address);
+}
+function loadSegmentVolume() {
+  return getContract().segmentVolume();
+}
+function loadContributionsVolume() {
+  return getContract().contributionsVolume();
+}
+function loadRewardPoolBalance() {
+  return getContract(TOKEN_ADDRESS, ercABI).balanceOf(COMPOSER_ADDRESS);
 }
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -215,8 +258,35 @@ form.addEventListener("submit", async (e) => {
   renderStatus("loading...");
 
   try {
-    const [{ value: lockedAmount }, { value: contributions }] =
-      await Promise.all([loadLockedFunds(address), loadContributions(address)]);
+    const [
+      { value: contributions, lockedValue: lockedAmount },
+      volume,
+      contributionsVolume,
+      poolBalance,
+    ] = await Promise.all([
+      loadContributions(address),
+      loadSegmentVolume(),
+      loadContributionsVolume(),
+      loadRewardPoolBalance(),
+    ]);
+
+    const supply = parseUnits("1000000", "gwei");
+
+    const activeScaleIndex = scales.findIndex((s) => s.isActive);
+    const multiplier =
+      activeScaleIndex === 0
+        ? 10n
+        : activeScaleIndex === 1
+        ? 3n
+        : activeScaleIndex === 0
+        ? 1n
+        : 0n;
+
+    const poolSize =
+      (contributions * multiplier * volume * poolBalance) /
+      (supply * 200n * contributionsVolume);
+
+    
 
     renderStatus(
       `<div class="stack">
@@ -225,12 +295,14 @@ form.addEventListener("submit", async (e) => {
 <span>${formatGwei(lockedAmount)}</span>
 </div>
 <div>
-<span>Contributions:</span>
-<span>${formatGwei(contributions)}</span>
+<span>Estimated rewards:</span>
+<span>${formatGwei(poolSize)}</span>
 </div>
 </div>`
     );
   } catch (e) {
+    console.error(e);
+    debugger;
     renderStatus("network error, please try again later..", "error");
     return;
   }

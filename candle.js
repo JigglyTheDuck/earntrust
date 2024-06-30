@@ -52,7 +52,7 @@ export default class CandleRenderer {
 
   render(priceData) {
     this.priceData = priceData;
-    const { open, close, low, high, target } = priceData;
+    const { scales, open, close, low, high, target } = priceData;
     const candleX = this.canvas.width / 2 - this.candleWidth / 2;
     const color = getComputedStyle(document.documentElement).getPropertyValue(
       open > close ? "--color-error" : "--color-success"
@@ -89,7 +89,6 @@ export default class CandleRenderer {
     };
 
     const drawScale = (distance, color, limit, isActive = false) => {
-
       ctx.fillStyle = hexToRgba(
         getComputedStyle(document.documentElement).getPropertyValue(
           `--color-${color}`
@@ -124,47 +123,10 @@ export default class CandleRenderer {
     const scaledClose = scalePrice(close);
     const scaledTarget = scalePrice(target);
 
-    const getActiveScale = (scales) => {
-      let i = 0;
-      for (const scale of scales) {
-        if (
-          close <= target + target * scale &&
-          close >= target - target * scale
-        )
-          return i;
-
-        i += 1;
-      }
-
-      return -1;
-    };
-
     const drawScales = () => {
-      const scales = [
-        {
-          color: "success",
-          bound: 0.005,
-        },
-        {
-          color: "primary",
-          bound: 0.015,
-        },
-        {
-          color: "warning",
-          bound: 0.03,
-        },
-      ];
-
-      const activeScaleIndex = getActiveScale(scales.map((s) => s.bound));
-
       let previousBound = 0;
       for (const [i, scale] of scales.entries()) {
-        drawScale(
-          scale.bound,
-          scale.color,
-          previousBound,
-          activeScaleIndex === i
-        );
+        drawScale(scale.bound, scale.color, previousBound, scale.isActive);
         previousBound = scale.bound;
       }
     };
@@ -212,9 +174,9 @@ export default class CandleRenderer {
 
     ctx.strokeStyle = getComputedStyle(
       document.documentElement
-    ).getPropertyValue("--color-primary");
+    ).getPropertyValue("--color-error");
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(
-      "--color-primary"
+      "--color-error"
     );
 
     // Draw price target on the left side of the canvas

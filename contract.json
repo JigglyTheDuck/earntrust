@@ -7,8 +7,13 @@
         "type": "address"
       }
     ],
-    "name": "lockedFunds",
+    "name": "contributions",
     "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "segmentIndex",
+        "type": "uint64"
+      },
       {
         "internalType": "uint64",
         "name": "value",
@@ -16,7 +21,7 @@
       },
       {
         "internalType": "uint64",
-        "name": "segmentIndex",
+        "name": "lockedValue",
         "type": "uint64"
       }
     ],
@@ -24,24 +29,26 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "contributions",
+    "inputs": [],
+    "name": "segmentVolume",
     "outputs": [
       {
-        "internalType": "uint64",
-        "name": "value",
-        "type": "uint64"
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "contributionsVolume",
+    "outputs": [
       {
-        "internalType": "uint64",
-        "name": "segmentIndex",
-        "type": "uint64"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

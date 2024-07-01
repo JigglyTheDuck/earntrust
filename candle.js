@@ -59,10 +59,9 @@ export default class CandleRenderer {
       open > close ? "--color-error" : "--color-success"
     );
 
-    const lowPrice = Math.min(target - target * 0.02, low);
-    const highPrice = Math.max(target + target * 0.02, high);
-
     const scalePrice = (price) => {
+      const lowPrice = Math.min(target - target * 0.03, low);
+      const highPrice = Math.max(target + target * 0.02, high);
       const diff = (highPrice - lowPrice) / (window.innerHeight > 600 ? 16 : 8);
       let min = lowPrice - diff;
       const range = highPrice + diff - min;

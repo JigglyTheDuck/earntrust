@@ -7,16 +7,21 @@
         "type": "address"
       }
     ],
-    "name": "lockedTokens",
+    "name": "contributions",
     "outputs": [
       {
-        "internalType": "uint160",
-        "name": "value",
-        "type": "uint160"
+        "internalType": "uint64",
+        "name": "segmentIndex",
+        "type": "uint64"
       },
       {
         "internalType": "uint64",
-        "name": "unlocksAt",
+        "name": "value",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "lockedValue",
         "type": "uint64"
       }
     ],
@@ -24,29 +29,29 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "segmentVolume",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "unwrap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "contributionsVolume",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "wrap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   }
 ]

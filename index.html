@@ -1,47 +1,126 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/nes.min.css" />
     <link rel="stylesheet" href="/index.css" />
     <link rel="stylesheet" href="/layout.css" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jiggly token wrapper</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="title" content="EarnTrust - trade together" />
+    <meta
+      name="description"
+      content="Turn trading into a game and earn rewards. It's free, safe, and fun."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://earntrust.app" />
+    <meta property="og:title" content="EarnTrust - trade together" />
+    <meta
+      property="og:description"
+      content="Turn trading into a game and earn rewards. It's free, safe, and fun."
+    />
+    <meta property="og:image" content="https://earntrust.app/favicon-lg.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://earntrust.app" />
+    <meta property="twitter:title" content="EarnTrust - trade together" />
+    <meta
+      property="twitter:description"
+      content="Turn trading into a game and earn rewards. It's free, safe, and fun."
+    />
+    <meta
+      property="twitter:image"
+      content="https://earntrust.app/favicon-lg.png"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>EarnTrust</title>
   </head>
   <body class="padding-md">
     <div
-      class="app-container nes-container with-title padding-md width-md gap-lg"
+      class="app-container nes-container with-title padding-sm width-md gap-lg"
     >
-      <p class="title">Jiggly wrapper</p>
-      <form id="main-form" class="stack padding-md stack gap-md">
-        <div class="stack gap-md">
-          <div id="app"></div>
+      <p class="title">EarnTrust</p>
+      <form
+        id="main-form"
+        class="stack justify-space-between padding-md stack gap-md grow-1"
+      >
+        <div class="progress-container">
+          <progress
+            id="progress_bar"
+            class="nes-progress is-primary"
+            value="0"
+            max="100"
+          ></progress>
+          <span id="progress_value" class="nes-progress-value nes-text blink"
+            >Loading...</span
+          >
         </div>
+        <div id="rewardsView" class="stack hidden grow-1 gap-md align-start">
+          Enter your address below
+          <div class="nes-field stack gap-md">
+            <div class="inline justify-center gap-sm">
+              <input
+                placeholder="0x..."
+                name="address"
+                type="text"
+                id="rewards"
+                class="nes-input"
+                autocomplete="off"
+              />
+              <button id="action" class="nes-btn is-success">LOAD</button>
+            </div>
+            <span id="status" class="nes-text is-error"></span>
+          </div>
+        </div>
+        <canvas id="candlestickCanvas" class="grow-1"></canvas>
+        <!--
         <div class="nes-field">
-          <label for="name_field">Amount</label>
-          <input
-            placeholder="1000"
-            disabled
-            type="text"
-            inputmode="numeric"
-            id="amount"
-            class="nes-input"
-            autocomplete="off"
-          />
+          <div class="inline justify-center gap-sm">
+            <div>
+              <input
+                placeholder="Amount"
+                disabled
+                type="text"
+                inputmode="numeric"
+                id="amount"
+                class="nes-input"
+                autocomplete="off"
+              />
+            </div>
+            <div class="hidden" id="app"></div>
+            <button id="action" class="nes-btn is-warning" disabled>APPROVE</button>
+          </div>
           <span id="status" class="nes-text is-error"></span>
-        </div>
-        <div class="inline sm justify-center gap-md">
-          <!--<button id="action-max" class="nes-btn is-disabled" disabled>MAX</button>-->
-          <button id="action" class="nes-btn is-disabled" disabled>UNWRAP</button>
+          </div>
+            -->
+
+        <div class="inline xs reverse justify-center gap-sm separator">
+          <a
+            href="https://earntrust.app/guide.pdf"
+            target="_blank"
+            class="nes-btn is-primary"
+            >GUIDE</a
+          >
+          <button type="button" id="action__view" class="nes-btn">
+            REWARDS
+          </button>
+          <a
+            href="https://app.uniswap.org/swap?chain=base&inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x329b95e76AAc7C50B0fAe1057Ed4c03f26C7A114"
+            target="_blank"
+            id="action"
+            class="nes-btn is-warning"
+            disabled
+            >TRADE</a
+          >
         </div>
       </form>
-      <footer>
-        make sure you're on <br />
-        https://wrap.jiggly.app
-      </footer>
     </div>
-    <script type="module" src="/main.js"></script>
+    <!--<script type="module" src="/main.js"></script>-->
+    <script type="module" src="/web3.js"></script>
   </body>
 </html>

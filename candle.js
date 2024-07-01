@@ -94,7 +94,7 @@ export default class CandleRenderer {
         getComputedStyle(document.documentElement).getPropertyValue(
           `--color-${color}`
         ),
-        isActive ? 0.5 : 0.1
+        isActive ? 0.5 : 0.25
       );
       let y = this.canvas.height - scalePrice(target + target * distance);
       if (!limit) {

@@ -14,8 +14,8 @@ import "./app.css";
 import contractABI from "./contract.json";
 import ercABI from "./erc20.json";
 
-const TOKEN_ADDRESS = "0xC66c6BeB1e503341b7cC95f0865062B514aDAC8A";
-const COMPOSER_ADDRESS = "0xeA33DbcB3C5E39507Aa0e5F85666DA1D354169Dc";
+const TOKEN_ADDRESS = "0x329b95e76AAc7C50B0fAe1057Ed4c03f26C7A114";
+const COMPOSER_ADDRESS = "0x575352e38b841001F29DD40613A4AC874c323166";
 
 const canvas = document.getElementById("candlestickCanvas");
 const rewardsView = document.getElementById("rewardsView");

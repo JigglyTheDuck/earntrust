@@ -40,7 +40,7 @@ export default class CandleRenderer {
   }
 
   resize() {
-    if (this.canvas.classList.contains('hidden')) return
+    if (this.canvas.classList.contains("hidden")) return;
     this.canvas.width = 0;
     this.canvas.height = 0;
     const { width, height } = this.canvas.getBoundingClientRect();
@@ -80,10 +80,11 @@ export default class CandleRenderer {
     const drawRect = (y0, y1) => {
       const height = y1 - y0;
       ctx.beginPath();
+      /*
       const startY = this.canvas.height - scalePrice(target);
       ctx.moveTo(0, startY);
       ctx.lineTo(this.canvas.width / 2, y1);
-      ctx.lineTo(this.canvas.width / 2, y0);
+      ctx.lineTo(this.canvas.width / 2, y0);*/
 
       ctx.rect(this.canvas.width / 2, y0, this.canvas.width / 2, height); // Add a rectangle to the current path
       ctx.fill(); // Render the path
@@ -94,12 +95,11 @@ export default class CandleRenderer {
         getComputedStyle(document.documentElement).getPropertyValue(
           `--color-${color}`
         ),
-        isActive ? 0.66 : 0.2
+        isActive ? 0.5 : 0.1
       );
       let y = this.canvas.height - scalePrice(target + target * distance);
-      // TODO: highlight the section if within
       if (!limit) {
-        const y1 = this.canvas.height - scalePrice(target - target * distance);
+        let y1 = this.canvas.height - scalePrice(target - target * distance);
         drawRect(y, y1);
       } else {
         const y1 = this.canvas.height - scalePrice(target + target * limit);
@@ -172,6 +172,13 @@ export default class CandleRenderer {
       this.canvas.width - 8,
       this.canvas.height - scaledClose + (close < open ? 2 : -2)
     );
+
+    if (scaledHigh - scaledLow < 10) {
+      ctx.beginPath();
+      ctx.moveTo(candleX + this.candleWidth / 2, 0);
+      ctx.lineTo(candleX + this.candleWidth / 2, this.canvas.height);
+      ctx.stroke();
+    }
 
     ctx.strokeStyle = getComputedStyle(
       document.documentElement
